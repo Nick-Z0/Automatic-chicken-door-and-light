@@ -1,4 +1,4 @@
-# Automatic chicken door and light management
+# Automatic chicken coop door and light management
 
 This is device calculates the sunrise and sunset times for a specific location, and utilizes a stepper motor that operates a guillotine door of a chicken coop at sunrise and some predetermined time after sunset. Additionally, it calculates the hours of daylight of a specific day and if the number of hours is less than 14 hours[^1], it turns on a relay for the additional time until the total light time is 14 hours. A small push-button is also incorporated to test the door and relay operation.
 
