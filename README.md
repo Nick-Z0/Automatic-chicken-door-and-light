@@ -2,7 +2,7 @@
 
 This is device calculates the sunrise and sunset times for a specific location, and utilizes a stepper motor that operates a guillotine door of a chicken coop at sunrise and some predetermined time after sunset. Additionally, it calculates the hours of daylight of a specific day and if the number of hours is less than 14 hours*, it turns on a relay for the additional time until the total light time is 14 hours. A small push-button is also incorporated to test the door and relay operation.
 
-*Chickens need at least 14 hours of light to achieve maximum egg production.
+*Chickens need at least 14 hours of light to achieve maximum egg production. See [here p.28-29](https://lohmann-breeders.com/media/strains/cage/management/LOHMANN-Brown-Classic-Cage.pdf)
 
 ![Finished board with motor](/images/finished-board-with-motor.jpg)
 
@@ -112,3 +112,4 @@ This is my first relatively advanced project so any issues, tips or comments are
 5. https://github.com/JChristensen/JC_Sunrise
 6. https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/
 7. https://www.techtarget.com/whatis/definition/EEPROM-electrically-erasable-programmable-read-only-memory
+8. https://lohmann-breeders.com/media/strains/cage/management/LOHMANN-Brown-Classic-Cage.pdf
