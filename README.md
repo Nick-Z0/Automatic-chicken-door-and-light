@@ -67,23 +67,23 @@ Arduino button pin > button > GND
 These instructions are related to the edits of the sketch that need to be made to make it fit for your purposes. No instructions are given for the motor mount since it will differ from case to case. You will need to come up with what suits you best in terms of motor positioning, pulleys, door weight etc.  
 See [images](/images/) for  photos of my construction process.
 
-###### 1. Door range and step count
+#### 1. Door range and step count
 To adjust the maximum door range, the variable `maxstep` is used. To calculate your `maxstep` you need to know the steps needed for a full rotation stepper motor. This can be found in the datasheet. There are, however, different versions of this motor available with different gear reductions, so you have to test it yourself with some trial and error. After you figured out the total number of steps needed for one revolution, you need can take your axle/pulley and manually measure how many revolutions it takes to completely open the door. Do not forget to account for the difference in diameter caused by the rope that is rolling on itself. Finally, you multiply the number of rotations with the number of steps to get the `maxstep`. In my case: 2048 steps per revolution x 9 revolutions = 18432 steps.
-###### 2. Adjust coordinates
+#### 2. Adjust coordinates
 Edit the `myLat` and `myLon` variables to the coordinates of your chicken coop.
-###### 3. Adjust time zone variables
+#### 3. Adjust time zone variables
 Adjust the time zone variables according to the [library instructions](https://github.com/JChristensen/Timezone#coding-timechangerules).
-###### 4. Adjust Arduino pins
+#### 4. Adjust Arduino pins
 Do not forget to edit your sketch if you use different pins on your Arduino for example to connect the motor. If you use a different pin for the test button (`btn_pin`), you should make sure that it supports [hardware interrupts](https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/#:~:text=BOARD,with%20CHANGE). The relay pin can also be changed and its variable is called `relay_pin`.
-###### 5. Populate the EEPROM address
+#### 5. Populate the EEPROM address
 For the first execution of the sketch you need to populate the EEPROM address that is used to save the door status. You can do that by uncommenting the following line, upload the sketch, comment the line again and re-upload the sketch.
 ```
 EEPROM.update(0, 1);
 ```
 It is not advised to make edits on the EEPROM commands without fully [understanding what it is](www.techtarget.com/whatis/definition/EEPROM-electrically-erasable-programmable-read-only-memory), since the EEPROM has limited write cycles and using it in a loop without caution will wear it out quickly.
-###### 6. Adjust the overhead time
+#### 6. Adjust the overhead time
 To account for the time after sunset that is still light, I used and overhead of 45 minutes. I did not use a variable for this because I had not intended to change it. You can use the find & replace function to change `45` to another value of minutes that suits your chickens better.
-###### 7. Use the specified versions of libraries in the sketch
+#### 7. Use the specified versions of libraries in the sketch
 The library versions that are used in the sketch are noted in a comment next to the library. Using different versions of the same library might cause issues. If you want to make use of a newer version of a library make sure everything works as expected and the library syntax has not changed between versions.
 
 ## Shortcomings and possible solutions
