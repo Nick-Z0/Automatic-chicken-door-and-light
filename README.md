@@ -73,17 +73,19 @@ To adjust the maximum door range, the variable `maxstep` is used. To calculate y
 Edit the `myLat` and `myLon` variables to the coordinates of your chicken coop.
 #### 3. Adjust time zone variables
 Adjust the time zone variables according to the [library instructions](https://github.com/JChristensen/Timezone#coding-timechangerules).
-#### 4. Adjust Arduino pins
+#### 4. Set the RTC time to UTC
+To set the time of the RTC you can use the [SetSerial.ino](https://github.com/JChristensen/DS3232RTC/tree/master/examples/SetSerial) example from DS3232RTC library to set the RTC to **UTC** (*not* your timezone).
+#### 5. Adjust Arduino pins
 Do not forget to edit your sketch if you use different pins on your Arduino for example to connect the motor. If you use a different pin for the test button (`btn_pin`), you should make sure that it supports [hardware interrupts](https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/#:~:text=BOARD,with%20CHANGE). The relay pin can also be changed and its variable is called `relay_pin`.
-#### 5. Populate the EEPROM address
+#### 6. Populate the EEPROM address
 For the first execution of the sketch you need to populate the EEPROM address that is used to save the door status. You can do that by uncommenting the following line, upload the sketch, comment the line again and re-upload the sketch.
 ```
 EEPROM.update(0, 1);
 ```
 It is not advised to make edits on the EEPROM commands without fully [understanding what it is](www.techtarget.com/whatis/definition/EEPROM-electrically-erasable-programmable-read-only-memory), since the EEPROM has limited write cycles and using it in a loop without caution will wear it out quickly.
-#### 6. Adjust the overhead time
+#### 7. Adjust the overhead time
 To account for the time after sunset that is still light, I used and overhead of 45 minutes. I did not use a variable for this because I had not intended to change it. You can use the find & replace function to change `45` to another value of minutes that suits your chickens better.
-#### 7. Use the specified versions of libraries in the sketch
+#### 8. Use the specified versions of libraries in the sketch
 The library versions that are used in the sketch are noted in a comment next to the library. Using different versions of the same library might cause issues. If you want to make use of a newer version of a library make sure everything works as expected and the library syntax has not changed between versions.
 
 ## Shortcomings and possible solutions
