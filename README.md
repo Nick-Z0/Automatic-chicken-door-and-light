@@ -1,26 +1,26 @@
 # Automatic chicken door and light management
 
-This is device calculates the sunrise and sunset times for a specific location, and utilizes a stepper motor that operates a guillotine door of a chicken coop at sunrise and some predetermined time after sunset. Additionally, it calculates the hours of daylight of a specific day and if the number of hours is less than 14 hours*, it turns on a relay for the additional time until the total light time is 14 hours. A small push-button is also incorporated to test the door and relay operation.
+This is device calculates the sunrise and sunset times for a specific location, and utilizes a stepper motor that operates a guillotine door of a chicken coop at sunrise and some predetermined time after sunset. Additionally, it calculates the hours of daylight of a specific day and if the number of hours is less than 14 hours[^1], it turns on a relay for the additional time until the total light time is 14 hours. A small push-button is also incorporated to test the door and relay operation.
 
-*Chickens need at least 14 hours of light to achieve maximum egg production. See [here p.28-29](https://lohmann-breeders.com/media/strains/cage/management/LOHMANN-Brown-Classic-Cage.pdf)
+[^1]: Chickens need at least 14 hours of light to achieve maximum egg production. See [here p.28-29](https://lohmann-breeders.com/media/strains/cage/management/LOHMANN-Brown-Classic-Cage.pdf)
 
 ![Finished board with motor](/images/finished-board-with-motor.jpg)
 
 
 ## Features
-- ### Can handle power loss
+### Can handle power loss
  After each complete movement of the motor, the door status is written to the EEPROM. This saves the door status in case of power loss. The RTC module has its own battery and can also handle power loss well. I have found that this method is fairly robust and that the only time it might fail is when the power loss occurs during motor movement (see more in shortcomings chapter below). If power loss occurs at a different time (*not* during motor operation) and the status of the door is not what it should be at the time, the motor will be operated to move the door to the correct position according to the time rules.
-- ### Motor is turned off after operation
+### Motor is turned off after operation
 After each motor operation the coils of the motor are turned off since this stepper motor has a gear reduction and can stay in place even with some weight pulling on its shaft. Normally, stepper motors without gear reduction need constant power to stay in place.
-- ### Extra time after sunset
+### Extra time after sunset
 The door is programmed to open at sunrise and close 45 minutes after sunset. I found this extra 45 minutes by observing when the chickens were all inside. You might need to adjust this time since it is affected by local geography, for example the sun may set earlier due to mountains.
-- ### Troubleshooting messages in serial monitor
+### Troubleshooting messages in serial monitor
 The code includes also some messages which are printed to the serial monitor of the Arduino which can help with troubleshooting.
-- ### Test button
+### Test button
 Pressing the test button will make the motor move the door to the inverse position it is currently in and then move back. During this operation the relay is also enabled and turns the light on during the test loop (for example, if the door is closed, the motor will open  the door fully and then close it).
-- ### Sketch loop executes every 30 seconds
+### Sketch loop executes every 30 seconds
 The loop in the sketch executes every 30 seconds since that is enough accuracy for this application. The press of the button is registered instantly, however, the test run might take up to 30 seconds to start.
-- ### Relay module for light
+### Relay module for light
 A relay module is used to operate the light using mains voltage.
 
 ![Testing](/images/testing.jpg)
