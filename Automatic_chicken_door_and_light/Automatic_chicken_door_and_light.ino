@@ -116,7 +116,7 @@ void loop()
       EEPROM.update(0, 1); // Save door status on EEPROM
       Serial.println("Door Status: JUST OPENED DOOR FOR TESTING");
 
-      delay(2000);
+      delay(5000);
 
       command = 0; // down
       step = move_motor(command, 0);
