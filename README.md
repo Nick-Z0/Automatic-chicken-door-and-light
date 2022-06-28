@@ -6,7 +6,6 @@ This is device calculates the sunrise and sunset times for a specific location, 
 
 ![Finished board with motor](/images/finished-board-with-motor.jpg)
 
-
 ## Features
 ### Can handle power loss
  After each complete movement of the motor, the door status is written to the EEPROM. This saves the door status in case of power loss. The RTC module has its own battery and can also handle power loss well. I have found that this method is fairly robust and that the only time it might fail is when the power loss occurs during motor movement (see more in shortcomings chapter below). If power loss occurs at a different time (*not* during motor operation) and the status of the door is not what it should be at the time, the motor will be operated to move the door to the correct position according to the time rules.
@@ -31,7 +30,7 @@ A relay module is used to operate the light using mains voltage.
 - **28BYJ-48 12V Stepper Motor** (I started this project with a 5V version of the motor but it lacked the power to pull up the door. Turning the voltage up to 8V on the 5V motor also worked but, in the end, I decided to get a 12V motor for a more robust system)
 - **ULN2003 Stepper Motor Driver Board**
 - **LM7805 voltage regulator IC** (to power the Arduino and modules to avoid using the Arduino's integrated voltage regulator)
-- **Capacitors** (used to support the LM7805 IC)
+- **Capacitors** (used to support the LM7805 IC, I used 4.7uF and 100uF but the values are not that critical)
 - **Push button** (for test button)
 - **Blank PCB board**
 - **12V Power Supply**
@@ -54,13 +53,8 @@ A relay module is used to operate the light using mains voltage.
 - Metal file
 
 ## Schematic
-{image}
-
-stepper pin 1: Arduino pin 4
-stepper pin 2: Arduino pin 5
-stepper pin 3: Arduino pin 6
-stepper pin 4: Arduino pin 7
-Arduino button pin > button > GND
+![Schematic](/schematic/Schematic_image.png)
+The schematic is not 100% accurate since I used a relay module. A printable and pdf version can be found [here](/schematic/).
 
 
 ## Instructions
