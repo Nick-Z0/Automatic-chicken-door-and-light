@@ -54,7 +54,7 @@ A relay module is used to operate the light using mains voltage.
 
 ## Schematic
 ![Schematic](/schematic/Schematic_image.png)
-The schematic is not 100% accurate since I used a relay module. A printable and pdf version can be found [here](/schematic/).
+The schematic is not 100% accurate since I used a [relay module](https://www.google.com/search?q=relay+module&client=opera&hs=yGF&hl=en&sxsrf=ALiCzsaHsf7KAVujgnkloH3JhEFOaq0Jtw:1656423081640&source=lnms&tbm=isch&sa=X&ved=2ahUKEwiuv4ProND4AhXy_rsIHXoNC18Q_AUoAXoECAEQAw&biw=2520&bih=1340&dpr=2#imgrc=O8RELdICkJA8eM) and not a "single" relay switch, but the wiring is straightforward. A printable and pdf version can be found [here](/schematic/).
 
 
 ## Instructions
