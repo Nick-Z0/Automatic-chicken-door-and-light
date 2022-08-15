@@ -128,6 +128,8 @@ void loop()
       EEPROM.update(0, 0); // Save door status on EEPROM
       Serial.println("Door Status: JUST CLOSED DOOR FOR TESTING");
 
+      delay(5000);
+
       command = 1; // up
       move_motor(command, maxstep);
       EEPROM.update(0, 1); // Save door status on EEPROM
