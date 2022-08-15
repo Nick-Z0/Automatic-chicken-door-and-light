@@ -1,5 +1,5 @@
 // Author: Nick Papanikolaou
-// Use SetSerial.ino example from DS3232RTC library to set the RTC to (!)UTC(!) (important).
+// Use SetSerial.ino example from DS3232RTC library to set the RTC to (!)UTC(!) NOT YOUR local timezone (important).
 
 #include <TimeLib.h>    // v1.6.1  https://github.com/PaulStoffregen/Time
 #include <Timezone.h>   // v1.2.4  https://github.com/JChristensen/Timezone
