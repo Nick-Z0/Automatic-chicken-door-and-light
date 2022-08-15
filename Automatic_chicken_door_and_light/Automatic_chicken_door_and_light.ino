@@ -197,11 +197,11 @@ void loop()
 
   // Light Mechanism
 
-  time_t fourteenHours = 50400; // 14 * 3600 , hours of light chickens need
+  time_t fifteenHours = 54000; // 15 * 3600 , hours of light chickens need
   extraLightTime = 0;
-  if (sunSet - sunRise < fourteenHours)
+  if (sunSet - sunRise < fifteenHours)
   {
-    extraLightTime = fourteenHours - (sunSet - sunRise);
+    extraLightTime = fifteenHours - (sunSet - sunRise);
   }
   else
     extraLightTime = 0;

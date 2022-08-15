@@ -1,6 +1,6 @@
 # Automatic chicken coop door and light management
 
-This is device calculates the sunrise and sunset times for a specific location, and utilizes a stepper motor that operates a guillotine door of a chicken coop at sunrise and some predetermined time after sunset. Additionally, it calculates the hours of daylight of a specific day and if the number of hours is less than 14 hours[^1], it turns on a relay for the additional time until the total light time is 14 hours. A small push-button is also incorporated to test the door and relay operation.
+This is device calculates the sunrise and sunset times for a specific location, and utilizes a stepper motor that operates a guillotine door of a chicken coop at sunrise and some predetermined time after sunset. Additionally, it calculates the hours of daylight of a specific day and if the number of hours is less than 15 hours[^1], it turns on a relay for the additional time until the total light time is 15 hours. A small push-button is also incorporated to test the door and relay operation.
 
 [^1]: Chickens need at least 14 hours of light to achieve maximum egg production. See [here p.28-29](https://lohmann-breeders.com/media/strains/cage/management/LOHMANN-Brown-Classic-Cage.pdf)
 
