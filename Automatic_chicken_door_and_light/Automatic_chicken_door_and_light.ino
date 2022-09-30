@@ -56,6 +56,7 @@ void setup()
   digitalWrite(STEPPER_PIN_4, LOW);
 
   Serial.begin(9600);
+  while (!Serial);
   myRTC.begin();
 
   setSyncProvider(myRTC.get); // the function to get the time from the RTC
@@ -85,8 +86,8 @@ void setup()
   pinMode(relay_pin, OUTPUT); // sets the digital pin relay_pin as output (light relay)
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(btn_pin, INPUT_PULLUP);
+  EIFR = (1 << INTF0); // clear interrupt 0 flag from previous runs (adjust the correct interrupt either INTF0 or INTF1 depending on which pin is used)
   attachInterrupt(digitalPinToInterrupt(btn_pin), toggle, FALLING);
-  flag = 0;
 }
 
 void loop()
@@ -107,6 +108,7 @@ void loop()
 
   if (flag) {
     Serial.println("TEST START");
+    flag = 0;
     digitalWrite(LED_BUILTIN, HIGH);
     digitalWrite(relay_pin, !digitalRead(relay_pin)); // Invert light status
 
@@ -138,7 +140,6 @@ void loop()
     digitalWrite(relay_pin, !digitalRead(relay_pin)); // Invert light status
     digitalWrite(LED_BUILTIN, LOW);
     Serial.println("TEST END");
-    flag = 0;
   }
 
   // Calculate sunrise and sunset
