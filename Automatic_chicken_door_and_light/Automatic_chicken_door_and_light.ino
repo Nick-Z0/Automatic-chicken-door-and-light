@@ -11,8 +11,8 @@
 // Keeps track of the current step.
 // We'll use a zero based index.
 int currentStep = 0;          // for stepper pin loop
-unsigned int maxstep = 18432; // 2048 steps per rev x 9 revolutions
-int step = 0;                 // actual steps in max steps, 0 means door is open, maxstep (18432) means door is closed
+unsigned int maxstep = 22528; // 2048 steps per rev x 11 revolutions
+int step = 0;                 // actual steps in max steps, 0 means door is open, maxstep (22528) means door is closed
 #define STEPPER_PIN_1 4
 #define STEPPER_PIN_2 5
 #define STEPPER_PIN_3 6
