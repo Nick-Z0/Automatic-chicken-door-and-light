@@ -80,7 +80,7 @@ void setup()
   printDate(sunSet);
   Serial.println("");
 
-  // Set begining door status = open, run only once to populate EEPROM address
+  // Set beginning door status = open, run only once to populate EEPROM address
   // EEPROM.update(0, 1);
 
   pinMode(relay_pin, OUTPUT); // sets the digital pin relay_pin as output (light relay)
@@ -98,7 +98,7 @@ void loop()
   Serial.print("doorStatus:");
   Serial.println(doorStatus);
   // This sets step value according to door status, the arduino does not remember the exact position of door (step)
-  // in case of a power failure in the middle of door movement at the sketch's current state but can be impemented
+  // in case of a power failure in the middle of door movement at the sketch's current state but can be implemented
   // by writing step to EEPROM.
   if (doorStatus == 1) {
     step = 0;
