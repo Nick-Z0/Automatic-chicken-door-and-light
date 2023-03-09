@@ -222,9 +222,6 @@ void loop()
     digitalWrite(relay_pin, LOW); // Turn light OFF
     lightStatus = false;
   }
-
-  delay(30000);     // 30 seconds
-  // delay(240000); // 4 minutes
 }
 
 int move_motor(bool direction, int step)
