@@ -3,21 +3,21 @@
 
 #include <TimeLib.h>     // v1.6.1  https://github.com/PaulStoffregen/Time
 #include <Timezone.h>    // v1.2.4  https://github.com/JChristensen/Timezone
-#include <DS3232RTC.h>   // v2.0.0  https://github.com/JChristensen/DS3232RTC
+#include <DS3232RTC.h>   // v2.0.1  https://github.com/JChristensen/DS3232RTC
 #include <JC_Sunrise.h>  // v1.0.3  https://github.com/JChristensen/JC_Sunrise
 #include <EEPROM.h>
 
 // Stepper Parameters
 // Keeps track of the current step.
 int currentStep = 0;  // for stepper pin loop
-int maxStep = 22528;  // 22528 are the steps for the door movement: 2048 steps per rev x 11 revolutions
-long step = 100000;   // initial step value, 100000 means door is open, maxStep + 100000 (122528) means door is closed
+int maxStep = 20480;  // 20480 are the steps for the door movement: 2048 steps per rev x 10 revolutions
+long step = 100000;   // initial step value, 100000 means door is open, maxStep + 100000 (120480) means door is closed
 #define STEPPER_PIN_1 4
 #define STEPPER_PIN_2 5
 #define STEPPER_PIN_3 6
 #define STEPPER_PIN_4 7
 
-const uint8_t btn_pin = 2;        // Interrupt system
+const uint8_t test_btn_pin = 2;   // Test button
 const uint8_t relay_pin = 9;      // Pin to toggle the relay module
 const uint8_t btn_up_pin = 12;    // Buttons for fine-tuning the door position
 const uint8_t btn_down_pin = 11;  // Buttons for fine-tuning the door position
@@ -40,10 +40,10 @@ time_t currentTime = 0;     // Current time
 bool lightStatus = false;   // Light relay status
 time_t extraLightTime = 0;  // Time the light stays on
 time_t sunRise, sunSet;
-unsigned int doorStatus;  // Door status, open or closed
-bool direction = 0;       // Motor movement direction 1 for opening, 0 for closing
+time_t sunSetBuffer = 45 * 60;  // Time after sunset when the door will close. At sunset it is not dark enough for the chickens to move in.
+unsigned int doorStatus;        // Door status, open or closed
+bool direction = 0;             // Motor movement direction 1 for opening, 0 for closing
 
-volatile uint8_t isTesting = 0;             // Testing flag
 unsigned long lastDiagnosticsTime = 0;      // Tracks the last time diagnostics was run
 unsigned long lastDoorStatusPrintTime = 0;  // Tracks the last time the door status was printed
 unsigned long lastRTCSyncTime = 0;          // Tracks the last time the RTC was synced
@@ -67,6 +67,7 @@ void setup() {
   myRTC.begin();
 
   setSyncProvider(myRTC.get);  // get the time from the RTC
+
   if (timeStatus() != timeSet)
     Serial.println("Unable to sync with the RTC");
   else
@@ -81,10 +82,7 @@ void setup() {
 
   pinMode(relay_pin, OUTPUT);  // sets the digital pin relay_pin as output (light relay)
   pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(btn_pin, INPUT_PULLUP);
-  EIFR = (1 << INTF0);  // clear interrupt 0 isTesting from previous runs (adjust the correct interrupt either INTF0 or INTF1 depending on which pin is used)
-  attachInterrupt(digitalPinToInterrupt(btn_pin), toggle, FALLING);
-
+  pinMode(test_btn_pin, INPUT_PULLUP);
   pinMode(btn_up_pin, INPUT_PULLUP);
   pinMode(btn_down_pin, INPUT_PULLUP);
 
@@ -93,9 +91,9 @@ void setup() {
   // in case of a power failure in the middle of door movement at the sketch's current state but can be implemented
   // by writing step to EEPROM.
   if (doorStatus == 1) {
-    step = 100000;
+    step = 100000;  // Door Open
   } else {
-    step = maxStep + 100000;
+    step = maxStep + 100000;  // Door Closed
   }
 
   syncTimeWithRTCAndUpdateSunTimes();  // Initial update of time variables
@@ -105,8 +103,9 @@ void setup() {
 
 void loop() {
   unsigned long currentMillis = millis();
+  doorStatus = EEPROM.read(0);
 
-  // Sync time with RTC twice a day, e.g., at 00:00 and 12:00
+  // Sync time with RTC twice a day, at 00:00 and 12:00
   int currentHour = hour();
   if ((currentHour == 0 || currentHour == 12) && (currentMillis - lastRTCSyncTime >= 43200000)) {  // 43200000 milliseconds = 12 hours
     syncTimeWithRTCAndUpdateSunTimes();
@@ -119,20 +118,29 @@ void loop() {
     lastTimeUpdateTime = currentMillis;
   }
 
-  //TESTING
-  if (isTesting) {
-    testMotorAndLight();
-  }
-
-  if (currentMillis - lastDiagnosticsTime >= 8000) {  // Print diagnostics every 8 seconds
+  if (currentMillis - lastDiagnosticsTime >= 10000) {  // Print diagnostics every 10 seconds
     diagnostics(currentTime, sunRise, sunSet, doorStatus);
     lastDiagnosticsTime = currentMillis;
   }
 
-  //  DOOR
-  if (currentTime > sunRise && currentTime < sunSet + 45 * 60) {
+  // DOOR
+  if (currentTime < sunRise) {
+    if (doorStatus == 1) {  // If the door is open before sunrise
+      Serial.println("Door Status: Closing door before sunrise...");
+      direction = 0;  // down
+      step = move_motor(direction, step, maxStep);
+      EEPROM.update(0, 0);  // Save door status on EEPROM
+      Serial.println("Door Status: JUST CLOSED DOOR");
+    } else {
+      if (currentMillis - lastDoorStatusPrintTime >= 5000) {
+        Serial.println("Door Status: CLOSED");
+        lastDoorStatusPrintTime = currentMillis;
+      }
+    }
+  } else if (currentTime >= sunRise && currentTime < sunSet + sunSetBuffer) {
     if (doorStatus == 0.00) {
       // OPEN DOOR == 1
+      Serial.println("Door Status: Opening door for sunrise...");
       direction = 1;  // up
       step = move_motor(direction, step, maxStep);
       EEPROM.update(0, 1);  // Save door status on EEPROM
@@ -143,9 +151,10 @@ void loop() {
         lastDoorStatusPrintTime = currentMillis;
       }
     }
-  } else if (currentTime > sunSet + 45 * 60) {
+  } else if (currentTime >= sunSet + sunSetBuffer) {
     if (doorStatus == 1) {
       // CLOSE DOOR == 0
+      Serial.println("Door Status: Closing door for sunset...");
       direction = 0;  // down
       step = move_motor(direction, step, maxStep);
       EEPROM.update(0, 0);  // Save door status on EEPROM
@@ -157,6 +166,7 @@ void loop() {
       }
     }
   }
+
 
   // DOOR FINE-TUNING
   // Check for up button press with debounce
@@ -185,9 +195,13 @@ void loop() {
     Serial.println("Down button released.");
   }
 
-
   // LIGHT
   lightMechanism(sunRise, sunSet);
+
+  //TESTING
+  if (debounceButton(test_btn_pin)) {
+    testMotorAndLight();
+  }
 }
 
 
@@ -261,7 +275,7 @@ long move_motor(bool direction, long current_step, int step_count) {
     current_step = direction ? current_step - 1 : current_step + 1;
     currentStep = (currentStep + 1) % 4;  // Cycle through step sequence
     delayMicroseconds(2250);              // 2000 microseconds, or 2 milliseconds seems to be
-                                          // about the shortest delay that is usable.  Anything
+                                          // about the shortest delay that is usable. Anything
                                           // lower and the motor starts to freeze.
   }
 
@@ -306,8 +320,8 @@ void diagnostics(time_t currentTime, time_t sunRise, time_t sunSet, unsigned int
   Serial.println(buffer);
 
   // Print Sunset + 45 Minutes
-  time_t sunSetPlus45 = sunSet + 45 * 60;
-  sprintf(buffer, "Sunset + 45 mins:  %02d:%02d:%02d", hour(), minute(sunSetPlus45), second(sunSetPlus45));
+  time_t sunSetPlus45 = sunSet + sunSetBuffer;
+  sprintf(buffer, "Sunset + 45 mins:  %02d:%02d:%02d", hour(sunSetPlus45), minute(sunSetPlus45), second(sunSetPlus45));
   Serial.println(buffer);
 
   // Print Day Length
@@ -325,12 +339,6 @@ void diagnostics(time_t currentTime, time_t sunRise, time_t sunSet, unsigned int
 
   Serial.println("##################################");
 }
-
-
-void toggle() {
-  isTesting = 1;
-}
-
 
 void lightMechanism(time_t sunRise, time_t sunSet) {
   time_t fifteenHours = 54000;  // 15 * 3600 , hours of light chickens need
@@ -373,7 +381,6 @@ void testMotorAndLight() {
   char buffer[100];  // Buffer for formatted string
 
   Serial.println("TEST START");
-  isTesting = 0;
   digitalWrite(LED_BUILTIN, HIGH);
   digitalWrite(relay_pin, !digitalRead(relay_pin));  // Invert light status
 
@@ -416,13 +423,24 @@ void testMotorAndLight() {
 }
 
 
-
 bool debounceButton(int pin) {
   if (digitalRead(pin) == LOW) {
-    delay(50);  // Short delay, adjust as needed
+    delay(100);  // Short delay, adjust as needed
     if (digitalRead(pin) == LOW) {
       return true;
     }
   }
   return false;
+}
+
+void setTestTime(int testHour, int testMinute, int testSecond) {
+  tmElements_t tm;
+  tm.Hour = testHour;
+  tm.Minute = testMinute;
+  tm.Second = testSecond;
+  tm.Day = 19;  // Set these to a specific date if needed
+  tm.Month = 1;
+  tm.Year = 2024 - 1970;  // Adjust the year as needed
+  time_t testTime = makeTime(tm);
+  currentTime = testTime;
 }
